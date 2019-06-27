@@ -27,6 +27,7 @@ ARG USER_ID=1000
 COPY src/maven-deps.zip /tmp/
 
 RUN apt-get update && apt-get install -y \
+    iputils-ping \
     vim \
     curl \
     git \
@@ -80,6 +81,7 @@ ENV LANG ${DEFAULT_LOCALE}
 ENV LANGUAGE ${DEFAULT_LOCALE}
 ENV LC_ALL ${DEFAULT_LOCALE}
 ENV MAVEN_HOME /usr/share/maven
+ENV JAVA_HOME /usr/lib/jvm/java-${JAVA_VERSION}-openjdk-amd64
 
 # By default, the build will be done in the default user's home directory
 USER silveruser

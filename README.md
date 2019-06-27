@@ -14,7 +14,7 @@ To create an image, just do:
 	$ ./build.sh
 
 this will build an image to work on the latest version of Silverpeas as defined in the `Dockerfile` 
-with the tag `silverpeas/sivlerdev:latest`.
+with the tag `silverpeas/silverdev:latest`.
 
 Otherwise, to create an image to build a given version of Silverpeas 6, you have to specify as argument 
 both the version of Silverpeas followed by the exact version of Wildfly used by this version:
