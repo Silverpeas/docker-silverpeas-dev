@@ -21,8 +21,10 @@ ARG WILDFLY_VERSION=15.0.1
 ARG JAVA_VERSION=8
 
 # Because the source code is shared between the host and the container, it is required the identifier
-# of the owner is the same between this two environments. By default, it is set at 1000.
+# of the owner and of its group are the same between this two environments. By default, they are both set at 1000.
+# The user in the Docker container is also in the group users (id 100 by default)
 ARG USER_ID=1000
+ARG GROUP_ID=1000
 
 COPY src/maven-deps.zip /tmp/
 
@@ -48,7 +50,8 @@ RUN apt-get update && apt-get install -y \
     gpgv \
   && rm -rf /var/lib/apt/lists/* \
   && update-ca-certificates -f \
-  && useradd -g users -u ${USER_ID} -d /home/silveruser -ms /bin/bash silveruser \
+  && groupadd -g ${GROUP_ID} silveruser \
+  && useradd -u ${USER_ID} -g ${GROUP_ID} -G users -d /home/silveruser -s /bin/bash -m silveruser \
   && mkdir -p /usr/share/maven /usr/share/maven/ref \
   && curl -fsSL -o /tmp/apache-maven.tar.gz https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
   && echo "${MAVEN_SHA}  /tmp/apache-maven.tar.gz" | sha512sum -c - \
