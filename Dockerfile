@@ -15,9 +15,9 @@ ENV TERM=xterm
 
 # Parameters whose values are required for the tests to succeed
 ARG DEFAULT_LOCALE=fr_FR.UTF-8
-ARG MAVEN_VERSION=3.6.1
-ARG MAVEN_SHA=b4880fb7a3d81edd190a029440cdf17f308621af68475a4fe976296e71ff4a4b546dd6d8a58aaafba334d309cc11e638c52808a4b0e818fc0fd544226d952544
-ARG WILDFLY_VERSION=15.0.1
+ARG MAVEN_VERSION=3.6.3
+ARG MAVEN_SHA=c35a1803a6e70a126e80b2b3ae33eed961f83ed74d18fcd16909b2d44d7dada3203f1ffe726c17ef8dcca2dcaa9fca676987befeadc9b9f759967a8cb77181c0
+ARG WILDFLY_VERSION=18.0.1
 ARG JAVA_VERSION=8
 
 # Because the source code is shared between the host and the container, it is required the identifier
@@ -70,7 +70,7 @@ RUN apt-get update && apt-get install -y \
   && mkdir /opt/wildfly-for-tests \
   && unzip /tmp/wildfly-${WILDFLY_VERSION}.Final.FOR-TESTS.zip -d /opt/wildfly-for-tests/ \
   && chown -R silveruser:users /opt/wildfly-for-tests/ \
-  && sed -i 's/\/home\/miguel\/tmp/\/opt\/wildfly-for-tests/g' /opt/wildfly-for-tests/wildfly-15.0.1.Final/standalone/configuration/standalone-full.xml \
+  && sed -i 's/\/home\/miguel\/tmp/\/opt\/wildfly-for-tests/g' /opt/wildfly-for-tests/wildfly-${WILDFLY_VERSION}.Final/standalone/configuration/standalone-full.xml \
   && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
   && echo "fr_FR.UTF-8 UTF-8" >> /etc/locale.gen \
   && echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen \
