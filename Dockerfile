@@ -6,9 +6,9 @@
 # By using such a container, we ensure the build is reproductible and doesn't depend on the
 # environment context specific to the developer's host.
 #
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
-LABEL name="Silverpeas Build" description="An image to build a Silverpeas project" vendor="Silverpeas" version=6.1 build=5
+LABEL name="Silverpeas Build" description="An image to build a Silverpeas project" vendor="Silverpeas" version=6.2 build=1
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
 ENV TERM=xterm
@@ -17,8 +17,8 @@ ENV TERM=xterm
 ARG DEFAULT_LOCALE=fr_FR.UTF-8
 ARG MAVEN_VERSION=3.6.3
 ARG MAVEN_SHA=c35a1803a6e70a126e80b2b3ae33eed961f83ed74d18fcd16909b2d44d7dada3203f1ffe726c17ef8dcca2dcaa9fca676987befeadc9b9f759967a8cb77181c0
-ARG WILDFLY_VERSION=18.0.1
-ARG JAVA_VERSION=8
+ARG WILDFLY_VERSION=20.0.1
+ARG JAVA_VERSION=11
 
 # Because the source code is shared between the host and the container, it is required the identifier
 # of the owner and of its group are the same between this two environments. By default, they are both set at 1000.
@@ -29,6 +29,7 @@ ARG GROUP_ID=1000
 COPY src/maven-deps.zip /tmp/
 
 RUN apt-get update && apt-get install -y \
+    apt-utils \
     iputils-ping \
     vim \
     curl \
@@ -36,6 +37,9 @@ RUN apt-get update && apt-get install -y \
     openssh-client \
     gnupg \
     locales \
+    language-pack-en \
+    language-pack-fr \
+    tzdata \
     procps \
     net-tools \
     zip \
@@ -48,10 +52,13 @@ RUN apt-get update && apt-get install -y \
     libreoffice-calc \
     libreoffice-impress \
     gpgv \
-  && rm -rf /var/lib/apt/lists/* \
-  && update-ca-certificates -f \
+    groovy \
   && groupadd -g ${GROUP_ID} silveruser \
   && useradd -u ${USER_ID} -g ${GROUP_ID} -G users -d /home/silveruser -s /bin/bash -m silveruser \
+  && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+  && apt-get install -y nodejs \
+  && rm -rf /var/lib/apt/lists/* \
+  && update-ca-certificates -f \
   && mkdir -p /usr/share/maven /usr/share/maven/ref \
   && curl -fsSL -o /tmp/apache-maven.tar.gz https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
   && echo "${MAVEN_SHA}  /tmp/apache-maven.tar.gz" | sha512sum -c - \
