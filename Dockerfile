@@ -8,7 +8,7 @@
 #
 FROM ubuntu:focal
 
-LABEL name="Silverpeas Build" description="An image to build a Silverpeas project" vendor="Silverpeas" version=6.2 build=1
+LABEL name="Silverpeas Dev" description="An image to build a Silverpeas project in development" vendor="Silverpeas" version=6.2 build=1
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
 ENV TERM=xterm
