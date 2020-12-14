@@ -24,7 +24,7 @@ while [[ $# -gt 0 ]]; do
       echo ""
       echo "with:"
       echo "   -i IMAGE_VERSION  the version of the Docker image to instantiate. By default latest."
-      echo "   -g WORKING_DIR    the path of your working directory to mount The working directory"
+      echo "   -w WORKING_DIR    the path of your working directory to mount The working directory"
       echo "                     will be mounted to /home/silveruser/projects. By default nothing to"
       echo "                     mount."
       echo "   -n NAME           a name to give to the container. By default silverdev-IMAGE_VERSION."

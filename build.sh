@@ -14,7 +14,7 @@ while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
     -h)
-      echo "Usage: build.sh [-u USER_ID] [-g GROUP_ID] -v [SILVERPEAS_VERSION WILDFLY_VERSION]"
+      echo "Usage: build.sh [-u USER_ID] [-g GROUP_ID] [-w WILDFLY_VERSION] [-v IMAGE_VERSION]"
       echo "Build a Docker image from which a Docker container could be spawned to code and build"
       echo "within a compartmentalized environment some Silverpeas projects that can be shared "
       echo "between the container and the host."
@@ -25,10 +25,12 @@ while [[ $# -gt 0 ]]; do
       echo "   -g GROUP_ID set the group identifier as GROUP_ID (it is recommended the GROUP_ID is"
       echo "               your own group identifier in the host if the code source is shared"
       echo "               between a Docker container and the host. By default 1000."
-      echo "   -v SILVERPEAS_VERSION WILDFLY_VERSION"
-      echo "               set both the version of Silverpeas and of the Widfly distribution for"
-      echo "               which a docker container will be spawn to work on theses versions."
-      echo "               By default, the latest version in development of Silverpeas"
+      echo "   -w WILDFLY_VERSION"
+      echo "               set the version of the Widfly distribution  to use in the integration"
+      echo "               tests. By default, the latest supported version of Wildfly."
+      echo "   -v IMAGE_VERSION"
+      echo "               the version of the Docker image to build. Should be equal to the"
+      echo "               version of Silverpeas for which the Docker image is."
       exit 0
       ;;
     -u)
@@ -41,15 +43,18 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -w)
+      checkNotEmpty "$2"
+      wildfly_version="--build-arg WILDFLY_VERSION=$2"
+      shift # past argument
+      shift # past first value
+      ;;
     -v)
+      checkNotEmpty "$2"
       silverpeas_version="$2"
-      wildfly_version="$3"
-      checkNotEmpty ${silverpeas_version}
-      checkNotEmpty ${wildfly_version}
       version=1
       shift # past argument
       shift # past first value
-      shift # past second value
       ;;
     *)
       die "Unknown option: $1"
@@ -60,12 +65,11 @@ done
 
 # build the Docker image for building some of the Silverpeas projects
 if [[ ${version} -eq 1 ]]; then
-  docker build ${user} ${group} \
-    --build-arg WILDFLY_VERSION=${wildfly_version} \
+  docker build ${user} ${group} ${wildfly_version} \
     -t silverpeas/silverdev:${silverpeas_version} \
     .
 else
-  docker build ${user} ${group} \
+  docker build ${user} ${group} ${wildfly_version} \
     -t silverpeas/silverdev:latest \
     .
 fi

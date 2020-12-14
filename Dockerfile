@@ -26,6 +26,8 @@ ARG JAVA_VERSION=11
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 COPY src/maven-deps.zip /tmp/
 
 RUN apt-get update && apt-get install -y \
@@ -66,7 +68,7 @@ RUN apt-get update && apt-get install -y \
   && rm -f /tmp/apache-maven.tar.gz \
   && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn \
   && unzip /tmp/maven-deps.zip -d /home/silveruser/ \
-  && chown -R silveruser:users /home/silveruser/.m2 \
+  && chown -R silveruser:silveruser /home/silveruser/.m2 \
   && curl -fsSL -o /tmp/swftools-bin-0.9.2.zip https://www.silverpeas.org/files/swftools-bin-0.9.2.zip \
   && echo 'd40bd091c84bde2872f2733a3c767b3a686c8e8477a3af3a96ef347cf05c5e43 *swftools-bin-0.9.2.zip' | sha256sum - \
   && unzip /tmp/swftools-bin-0.9.2.zip -d / \
@@ -86,6 +88,9 @@ RUN apt-get update && apt-get install -y \
 
 COPY src/inputrc /home/silveruser/.inputrc
 COPY src/settings.xml /home/silveruser/.m2/
+
+RUN chown silveruser:silveruser /home/silveruser/.inputrc \
+  && chown silveruser:silveruser /home/silveruser/.m2/settings.xml
 
 ENV LANG ${DEFAULT_LOCALE}
 ENV LANGUAGE ${DEFAULT_LOCALE}

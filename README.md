@@ -13,27 +13,26 @@ To create an image, just do:
 
 	$ ./build.sh
 
-this will build an image to work on the latest version of Silverpeas as defined in the `Dockerfile` 
-with the tag `silverpeas/silverdev:latest`.
+this will build an image to work on the latest version of Silverpeas and with the latest supported
+version of Wildfly as defined in the `Dockerfile` with the tag `silverpeas/silverdev:latest`.
 
-Otherwise, to create an image to build a given version of Silverpeas 6, you have to specify as argument 
-both the version of Silverpeas followed by the exact version of Wildfly used by this version:
+To specify both a given version of Wildfly (for instance Wildfly 10.1.0) to use and the version of 
+the image to set, just do:
 
-	$ ./build.sh -v 6.0 10.1.0
+	$ ./build.sh -w 10.1.0 -v 6.0
 
-This will build a Docker image with the tag `silverpeas/silverdev:6.0`. It is to work on a 
-Silverpeas 6.0 project and with Wildfly 10.1.0. Here, the version of Silverpeas passed as argument 
-isn't in fact important; it just a convention stipulating that a tag of an image is the version
-of the Silverpeas projects for which it was created. By doing so, it will be easy for the developer
-to switch between different containers, each of them prepared for a different version of Silverpeas.
-But the version of Wildfly passed as argument is important because a Wildfly distribution preconfigured 
-for the integration tests will be downloaded and in general, for each version of Silverpeas 
+This will build a Docker image with the tag `silverpeas/silverdev:6.0`. By convention, the version of
+the Docker image should be the same of the version of Silverpeas for which the image is dedicated. It
+is mainly for information so what, by doing so, it will be easy for the developer to switch between
+different containers, each of them prepared for a different version of Silverpeas.
+Nevertheless, the version of Wildfly passed as argument is important because a Wildfly distribution 
+preconfigured for the integration tests will be downloaded and in general, for each version of Silverpeas 
 (stable or in-development version) matches a given version of Wildfly.
 
 The image is created to start a container with a default user (`silveruser`). 1000 is his identifier
 and `users` (group identifier 100) is its main group.
 In order to avoid permissions problems with the source code that is shared between the host and the
-container, it is required that the identifier of your account in your host is the same that the 
+container(s), it is required that the identifier of your account in your host is the same that the 
 identifier of the default user in the container. In the case your user identifier isn't 1000, then you have to
 create an image by specifying the identifier in the command line as following (here, in our example,
 the user identifier is 1026):
