@@ -88,9 +88,12 @@ RUN apt-get update && apt-get install -y \
 
 COPY src/inputrc /home/silveruser/.inputrc
 COPY src/settings.xml /home/silveruser/.m2/
+COPY src/git_completion_profile /home/silveruser/.git_completion_profile
 
 RUN chown silveruser:silveruser /home/silveruser/.inputrc \
-  && chown silveruser:silveruser /home/silveruser/.m2/settings.xml
+  && chown silveruser:silveruser /home/silveruser/.m2/settings.xml \
+  && chown silveruser:silveruser /home/silveruser/.git_completion_profile \
+  && echo "if [ -f .git_completion_profile ]; then\n  . ~/.git_completion_profile\nfi" >> /home/silveruser/.bashrc
 
 ENV LANG ${DEFAULT_LOCALE}
 ENV LANGUAGE ${DEFAULT_LOCALE}
