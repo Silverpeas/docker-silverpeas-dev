@@ -1,0 +1,4 @@
+alias build='mvn clean install -PskipMinify'
+alias mk='mvn install -PskipMinify -Dmaven.test.skip=true'
+alias cmk='mvn clean install -PskipMinify -Dmaven.test.skip=true'
+alias dist='mvn clean install'

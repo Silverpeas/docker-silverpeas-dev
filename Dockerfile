@@ -87,6 +87,7 @@ RUN apt-get update && apt-get install -y \
   && update-locale LANG=${DEFAULT_LOCALE} LANGUAGE=${DEFAULT_LOCALE} LC_ALL=${DEFAULT_LOCALE}
 
 COPY src/inputrc /home/silveruser/.inputrc
+COPY src/bash_aliases /home/silveruser/.bash_aliases
 COPY src/settings.xml /home/silveruser/.m2/
 COPY src/git_completion_profile /home/silveruser/.git_completion_profile
 

@@ -11,7 +11,7 @@ while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
     -h)
-      echo "Usage: run.sh [-i IMAGE_VERSION] [-w WORKING_DIR] [-n NAME]"
+      echo "Usage: run.sh [-i IMAGE_VERSION] [-w WORKING_DIR] [-n NAME] [-s]"
       echo "Spawns and runs a container from the Docker image silverpeas/silverdev at a given version."
       echo "In order to build the projects in that container, the working directory of your projects"
       echo "will be mounted in the container. It checks if a Maven settings settings-docker.xml exist"
@@ -28,6 +28,7 @@ while [[ $# -gt 0 ]]; do
       echo "                     will be mounted to /home/silveruser/projects. By default nothing to"
       echo "                     mount."
       echo "   -n NAME           a name to give to the container. By default silverdev-IMAGE_VERSION."
+      echo "   -s                to share the local Maven repository of the host with the container."
       exit 0
       ;;
     -i)
@@ -45,6 +46,10 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -s)
+      maven_repo="-v ${HOME}/.m2/repository:/home/silveruser/.m2/repository"
+      shift # past argument
+      ;;
     *)
       die "Unknown option: $1"
       ;;
@@ -57,7 +62,8 @@ if [[ -f "$HOME"/.m2/settings-docker.xml ]]; then
 else
   settings="$HOME"/.m2/settings.xml
 fi
-docker run -it ${working_dir} -v "${settings}":/home/silveruser/.m2/settings.xml \
+docker run -it ${working_dir} ${maven_repo} \
+  -v "${settings}":/home/silveruser/.m2/settings.xml \
   -v "$HOME"/.m2/settings-security.xml:/home/silveruser/.m2/settings-security.xml \
   -v "$HOME"/.gitconfig:/home/silveruser/.gitconfig \
   -v "$HOME"/.ssh:/home/silveruser/.ssh \
