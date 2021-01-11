@@ -14,7 +14,7 @@ while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
     -h)
-      echo "Usage: build.sh [-u USER_ID] [-g GROUP_ID] [-w WILDFLY_VERSION] [-v IMAGE_VERSION]"
+      echo "Usage: build.sh [-u USER_ID] [-g GROUP_ID] [-w WILDFLY_VERSION] [-j JAVA_VERSION] [-v IMAGE_VERSION]"
       echo "Build a Docker image from which a Docker container could be spawned to code and build"
       echo "within a compartmentalized environment some Silverpeas projects that can be shared "
       echo "between the container and the host."
@@ -28,6 +28,8 @@ while [[ $# -gt 0 ]]; do
       echo "   -w WILDFLY_VERSION"
       echo "               set the version of the Widfly distribution  to use in the integration"
       echo "               tests. By default, the latest supported version of Wildfly."
+      echo "   -j JAVA_VERSION"
+      echo "               set the version of the JDK to use for building, testing and running Silverpeas"
       echo "   -v IMAGE_VERSION"
       echo "               the version of the Docker image to build. Should be equal to the"
       echo "               version of Silverpeas for which the Docker image is."
@@ -56,6 +58,12 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past first value
       ;;
+    -j)
+      checkNotEmpty "$2"
+      java_version="--build-arg JAVA_VERSION=$2"
+      shift # past argument
+      shift # past first value
+      ;;
     *)
       die "Unknown option: $1"
       ;;
@@ -65,11 +73,11 @@ done
 
 # build the Docker image for building some of the Silverpeas projects
 if [[ ${version} -eq 1 ]]; then
-  docker build ${user} ${group} ${wildfly_version} \
+  docker build ${user} ${group} ${wildfly_version} ${java_version} \
     -t silverpeas/silverdev:${silverpeas_version} \
     .
 else
-  docker build ${user} ${group} ${wildfly_version} \
+  docker build ${user} ${group} ${wildfly_version} ${java_version} \
     -t silverpeas/silverdev:latest \
     .
 fi
