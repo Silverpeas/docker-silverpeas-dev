@@ -12,6 +12,8 @@ LABEL name="Silverpeas Dev" description="An image to build a Silverpeas project 
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
 ENV TERM=xterm
+ENV TZ=Europe/Paris
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Parameters whose values are required for the tests to succeed
 ARG DEFAULT_LOCALE=fr_FR.UTF-8
@@ -84,7 +86,9 @@ RUN apt-get update && apt-get install -y \
   && echo "fr_FR.UTF-8 UTF-8" >> /etc/locale.gen \
   && echo "de_DE.UTF-8 UTF-8" >> /etc/locale.gen \
   && locale-gen \
-  && update-locale LANG=${DEFAULT_LOCALE} LANGUAGE=${DEFAULT_LOCALE} LC_ALL=${DEFAULT_LOCALE}
+  && update-locale LANG=${DEFAULT_LOCALE} LANGUAGE=${DEFAULT_LOCALE} LC_ALL=${DEFAULT_LOCALE} \
+  && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+  && dpkg-reconfigure --frontend noninteractive tzdata
 
 COPY src/inputrc /home/silveruser/.inputrc
 COPY src/bash_aliases /home/silveruser/.bash_aliases
