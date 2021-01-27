@@ -62,7 +62,10 @@ if [[ -f "$HOME"/.m2/settings-docker.xml ]]; then
 else
   settings="$HOME"/.m2/settings.xml
 fi
-docker run -it ${working_dir} ${maven_repo} \
+
+#xhost +si:localuser:$USER
+docker run -it -e DISPLAY=${DISPLAY} ${working_dir} ${maven_repo} \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v "${settings}":/home/silveruser/.m2/settings.xml \
   -v "$HOME"/.m2/settings-security.xml:/home/silveruser/.m2/settings-security.xml \
   -v "$HOME"/.gitconfig:/home/silveruser/.gitconfig \

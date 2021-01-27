@@ -21,6 +21,8 @@ ARG MAVEN_VERSION=3.6.3
 ARG MAVEN_SHA=c35a1803a6e70a126e80b2b3ae33eed961f83ed74d18fcd16909b2d44d7dada3203f1ffe726c17ef8dcca2dcaa9fca676987befeadc9b9f759967a8cb77181c0
 ARG WILDFLY_VERSION=20.0.1
 ARG JAVA_VERSION=11
+ARG IDEA_VERSION=2020.3.1
+ARG GROOVY_VERSION=3.0.7
 
 # Because the source code is shared between the host and the container, it is required the identifier
 # of the owner and of its group are the same between this two environments. By default, they are both set at 1000.
@@ -56,10 +58,10 @@ RUN apt-get update && apt-get install -y \
     libreoffice-calc \
     libreoffice-impress \
     gpgv \
-    groovy \
+    libgbm1 \
   && groupadd -g ${GROUP_ID} silveruser \
   && useradd -u ${USER_ID} -g ${GROUP_ID} -G users -d /home/silveruser -s /bin/bash -m silveruser \
-  && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+  && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
   && apt-get install -y nodejs \
   && rm -rf /var/lib/apt/lists/* \
   && update-ca-certificates -f \
@@ -71,6 +73,15 @@ RUN apt-get update && apt-get install -y \
   && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn \
   && unzip /tmp/maven-deps.zip -d /home/silveruser/ \
   && chown -R silveruser:silveruser /home/silveruser/.m2 \
+  && curl -fsSL -o /tmp/apache-groovy.zip https://dl.bintray.com/groovy/maven/apache-groovy-binary-${GROOVY_VERSION}.zip \
+  && unzip /tmp/apache-groovy.zip -d /opt/ \
+  && echo `grep -oP '(?<=")[a-zA-Z:/]+(?=")' /etc/environment`:/opt/groovy-{GROOVY_VERSION}/bin > /etc/environment \
+  && curl -fsSL -o /tmp/ideaIU.tar.gz https://download.jetbrains.com/idea/ideaIU-${IDEA_VERSION}.tar.gz \
+  && tar -xzf /tmp/ideaIU.tar.gz -C /home/silveruser/ \
+  && mkdir /home/silveruser/bin \
+  && echo "PATH=${PATH}:/home/silveruser/bin" >> /home/silveruser/.bashrc \
+  && ln -s /home/silveruser/idea*/bin/idea.sh /home/silveruser/bin/idea \
+  && rm -f /tmp/ideaIU.tar.gz \
   && curl -fsSL -o /tmp/swftools-bin-0.9.2.zip https://www.silverpeas.org/files/swftools-bin-0.9.2.zip \
   && echo 'd40bd091c84bde2872f2733a3c767b3a686c8e8477a3af3a96ef347cf05c5e43 *swftools-bin-0.9.2.zip' | sha256sum - \
   && unzip /tmp/swftools-bin-0.9.2.zip -d / \
@@ -95,9 +106,7 @@ COPY src/bash_aliases /home/silveruser/.bash_aliases
 COPY src/settings.xml /home/silveruser/.m2/
 COPY src/git_completion_profile /home/silveruser/.git_completion_profile
 
-RUN chown silveruser:silveruser /home/silveruser/.inputrc \
-  && chown silveruser:silveruser /home/silveruser/.m2/settings.xml \
-  && chown silveruser:silveruser /home/silveruser/.git_completion_profile \
+RUN chown -R silveruser:silveruser /home/silveruser \
   && echo "if [ -f .git_completion_profile ]; then\n  . ~/.git_completion_profile\nfi" >> /home/silveruser/.bashrc
 
 ENV LANG ${DEFAULT_LOCALE}
@@ -105,6 +114,7 @@ ENV LANGUAGE ${DEFAULT_LOCALE}
 ENV LC_ALL ${DEFAULT_LOCALE}
 ENV MAVEN_HOME /usr/share/maven
 ENV JAVA_HOME /usr/lib/jvm/java-${JAVA_VERSION}-openjdk-amd64
+ENV GROOVY_HOME /opt/groovy-${GROOVY_VERSION}
 
 # By default, the build will be done in the default user's home directory
 USER silveruser
