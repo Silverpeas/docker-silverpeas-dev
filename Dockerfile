@@ -51,6 +51,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     openjdk-${JAVA_VERSION}-jdk \
+    openjdk-${JAVA_VERSION}-doc \
     ffmpeg \
     imagemagick \
     ghostscript \
