@@ -9,7 +9,7 @@ function checkNotEmpty() {
   test "Z$1" != "Z" || die "Parameter is empty"
 }
 
-version=0
+version=$(grep -oP '(?<=version=)[0-9].[0-9]' Dockerfile)
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
@@ -70,15 +70,14 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# check the version already exists
+if git rev-parse "$version" >/dev/null 2>&1; then
+  git checkout $version
+fi
+
 
 # build the Docker image for building some of the Silverpeas projects
-if [[ ${version} -eq 1 ]]; then
-  docker build ${user} ${group} ${wildfly_version} ${java_version} \
-    -t silverpeas/silverdev:${silverpeas_version} \
+docker build $user $group $wildfly_version $java_version \
+    -t silverpeas/silverdev:$silverpeas_version \
     .
-else
-  docker build ${user} ${group} ${wildfly_version} ${java_version} \
-    -t silverpeas/silverdev:latest \
-    .
-fi
 

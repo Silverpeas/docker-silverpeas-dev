@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+WILDFLY_HOME=/opt/wildfly-for-tests/wildfly-23.0.0.Final
+
+if [ $# -ne 1 ]; then
+  echo "Missing argument: start|stop|status"
+fi
+
+case "$1" in
+  start)
+    ${WILDFLY_HOME}/bin/standalone.sh -c standalone-full.xml --debug 5005 &> ~/wildfly.log &
+    ;;
+  stop)
+    ${WILDFLY_HOME}/bin/jboss-cli.sh --connect :shutdown
+    ;;
+  status)
+    netstat -an | grep 9990 | grep LISTEN &> /dev/null
+    if [ $? -eq 0 ]; then
+      echo "Wildfly is started"
+      status=$(${WILDFLY_HOME}/bin/jboss-cli.sh --connect command=':read-attribute(name=server-state)' | grep -oP '(?<="result" => ")[a-z]+')
+      test "Z$status" = "Z" && status="not yet running"
+      echo "Wildfly is $status"
+    else
+      echo "Wildfly isn't running"
+    fi
+    ;;
+  *)
+    echo "Usage: wildfly start|stop|status"
+esac

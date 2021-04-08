@@ -1,14 +1,24 @@
 #
 # This Dockerfile is for creating an image to bootstrap a container within which one or more
-# Silverpeas projects in developement can be built. It is expected the source code is shared
-# between the host (in which the IDE is running) and the container (in which the build is performed).
+# Silverpeas projects can be developed and built. The development and build environment required
+# to work on one or more Silverpeas projects is set and ready in the container. By default, it is an
+# IDEA IntelliJ IDE that is installed.
+#
+# The version of the Docker image is based upon the version of the Silverpeas platform on which the
+# development and build environment is set up:
+# <Silverpeas major version>.<Silverpeas minor version>.<Docker image patch version>
+# For instance, a Docker image with version 6.2.1 means it defines a development and build
+# environment for a projet based upon Silverpeas 6.2 and it is the first corrective version of such
+# a Docker image.
 #
 # By using such a container, we ensure the build is reproductible and doesn't depend on the
-# environment context specific to the developer's host.
+# environment context specific to the developer's host. Only the .m2 repository and some settings
+# like .m2/settings.xml, .gitconfig, .gnupg and .ssh of the current user in the host are shared with
+# the container in order to be able to interact with his remote services.
 #
 FROM ubuntu:focal
 
-LABEL name="Silverpeas Dev" description="An image to build a Silverpeas project in development" vendor="Silverpeas" version=6.3
+LABEL name="Silverpeas Dev" description="A Docker image to dev and to build a Silverpeas project" vendor="Silverpeas" version=6.3
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
 ENV TERM=xterm
@@ -17,11 +27,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Parameters whose values are required for the tests to succeed
 ARG DEFAULT_LOCALE=fr_FR.UTF-8
-ARG MAVEN_VERSION=3.6.3
-ARG MAVEN_SHA=c35a1803a6e70a126e80b2b3ae33eed961f83ed74d18fcd16909b2d44d7dada3203f1ffe726c17ef8dcca2dcaa9fca676987befeadc9b9f759967a8cb77181c0
-ARG WILDFLY_VERSION=20.0.1
+ARG MAVEN_VERSION=3.8.1
+ARG MAVEN_SHA=0ec48eb515d93f8515d4abe465570dfded6fa13a3ceb9aab8031428442d9912ec20f066b2afbf56964ffe1ceb56f80321b50db73cf77a0e2445ad0211fb8e38d
+ARG WILDFLY_VERSION=23.0.0
 ARG JAVA_VERSION=11
-ARG IDEA_VERSION=2020.3.1
+ARG IDEA_VERSION=2021.1
 ARG GROOVY_VERSION=3.0.7
 
 # Because the source code is shared between the host and the container, it is required the identifier
@@ -30,11 +40,11 @@ ARG GROOVY_VERSION=3.0.7
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
-ENV DEBIAN_FRONTEND=noninteractive
-
 COPY src/maven-deps.zip /tmp/
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update \
+  && apt-get install -y tzdata \
+  && apt-get install -y \
     apt-utils \
     iputils-ping \
     vim \
@@ -45,7 +55,6 @@ RUN apt-get update && apt-get install -y \
     locales \
     language-pack-en \
     language-pack-fr \
-    tzdata \
     procps \
     net-tools \
     zip \
@@ -59,7 +68,10 @@ RUN apt-get update && apt-get install -y \
     libreoffice-calc \
     libreoffice-impress \
     gpgv \
+    bash-completion \
     libgbm1 \
+    htop \
+    firefox \
   && groupadd -g ${GROUP_ID} silveruser \
   && useradd -u ${USER_ID} -g ${GROUP_ID} -G users -d /home/silveruser -s /bin/bash -m silveruser \
   && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
@@ -106,6 +118,7 @@ COPY src/inputrc /home/silveruser/.inputrc
 COPY src/bash_aliases /home/silveruser/.bash_aliases
 COPY src/settings.xml /home/silveruser/.m2/
 COPY src/git_completion_profile /home/silveruser/.git_completion_profile
+COPY src/wildfly /home/silveruser/bin/
 
 RUN chown -R silveruser:silveruser /home/silveruser \
   && echo "if [ -f .git_completion_profile ]; then\n  . ~/.git_completion_profile\nfi" >> /home/silveruser/.bashrc
