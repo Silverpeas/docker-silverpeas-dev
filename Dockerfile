@@ -27,12 +27,12 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Parameters whose values are required for the tests to succeed
 ARG DEFAULT_LOCALE=fr_FR.UTF-8
-ARG MAVEN_VERSION=3.8.1
-ARG MAVEN_SHA=0ec48eb515d93f8515d4abe465570dfded6fa13a3ceb9aab8031428442d9912ec20f066b2afbf56964ffe1ceb56f80321b50db73cf77a0e2445ad0211fb8e38d
-ARG WILDFLY_VERSION=23.0.0
+ARG MAVEN_VERSION=3.8.4
+ARG MAVEN_SHA=a9b2d825eacf2e771ed5d6b0e01398589ac1bfa4171f36154d1b5787879605507802f699da6f7cfc80732a5282fd31b28e4cd6052338cbef0fa1358b48a5e3c8
+ARG WILDFLY_VERSION=24.0.1
 ARG JAVA_VERSION=11
-ARG IDEA_VERSION=2021.1
-ARG GROOVY_VERSION=3.0.7
+ARG IDEA_VERSION=2021.3.1
+ARG GROOVY_VERSION=3.0.9
 
 # Because the source code is shared between the host and the container, it is required the identifier
 # of the owner and of its group are the same between this two environments. By default, they are both set at 1000.

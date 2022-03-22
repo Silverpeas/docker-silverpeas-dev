@@ -50,6 +50,7 @@ while [[ $# -gt 0 ]]; do
       wildfly_version="--build-arg WILDFLY_VERSION=$2"
       shift # past argument
       shift # past first value
+      sed -i -e "s/WILDFLY_HOME=\/opt\/wildfly-for-tests\/wildfly-[0-9.]\+.Final/WILDFLY_HOME=\/opt\/wildfly-for-tests\/wildfly-${wildfly_version}.Final/g" src/wildfly
       ;;
     -v)
       checkNotEmpty "$2"
