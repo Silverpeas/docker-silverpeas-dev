@@ -18,7 +18,7 @@
 #
 FROM ubuntu:focal
 
-LABEL name="Silverpeas Dev" description="A Docker image to dev and to build a Silverpeas project" vendor="Silverpeas" version=6.3
+LABEL name="Silverpeas Dev" description="A Docker image to dev and to build a Silverpeas project" vendor="Silverpeas" version=6.3.1
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
 ENV TERM=xterm
@@ -27,12 +27,12 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Parameters whose values are required for the tests to succeed
 ARG DEFAULT_LOCALE=fr_FR.UTF-8
-ARG MAVEN_VERSION=3.8.4
-ARG MAVEN_SHA=a9b2d825eacf2e771ed5d6b0e01398589ac1bfa4171f36154d1b5787879605507802f699da6f7cfc80732a5282fd31b28e4cd6052338cbef0fa1358b48a5e3c8
+ARG MAVEN_VERSION=3.8.5
+ARG MAVEN_SHA=89ab8ece99292476447ef6a6800d9842bbb60787b9b8a45c103aa61d2f205a971d8c3ddfb8b03e514455b4173602bd015e82958c0b3ddc1728a57126f773c743
 ARG WILDFLY_VERSION=24.0.1
 ARG JAVA_VERSION=11
-ARG IDEA_VERSION=2021.3.1
-ARG GROOVY_VERSION=3.0.9
+ARG GROOVY_VERSION=3.0.10
+ARG GROOVY_SHA=a7632bcb91b4283c1b0c85f3e7e6dac1f9608cff6c8c07590b6a3c8b2056a1bc
 
 # Because the source code is shared between the host and the container, it is required the identifier
 # of the owner and of its group are the same between this two environments. By default, they are both set at 1000.
@@ -86,15 +86,12 @@ RUN apt-get update \
   && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn \
   && unzip /tmp/maven-deps.zip -d /home/silveruser/ \
   && chown -R silveruser:silveruser /home/silveruser/.m2 \
-  && curl -fsSL -o /tmp/apache-groovy.zip https://dl.bintray.com/groovy/maven/apache-groovy-binary-${GROOVY_VERSION}.zip \
+  && curl -fsSL -o /tmp/apache-groovy.zip https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-${GROOVY_VERSION}.zip \
+  && echo "${GROOVY_SHA}  /tmp/apache-groovy.zip" | sha256sum -c - \
   && unzip /tmp/apache-groovy.zip -d /opt/ \
   && echo `grep -oP '(?<=")[a-zA-Z:/]+(?=")' /etc/environment`:/opt/groovy-{GROOVY_VERSION}/bin > /etc/environment \
-  && curl -fsSL -o /tmp/ideaIU.tar.gz https://download.jetbrains.com/idea/ideaIU-${IDEA_VERSION}.tar.gz \
-  && tar -xzf /tmp/ideaIU.tar.gz -C /home/silveruser/ \
   && mkdir /home/silveruser/bin \
   && echo "PATH=${PATH}:/home/silveruser/bin" >> /home/silveruser/.bashrc \
-  && ln -s /home/silveruser/idea*/bin/idea.sh /home/silveruser/bin/idea \
-  && rm -f /tmp/ideaIU.tar.gz \
   && curl -fsSL -o /tmp/swftools-bin-0.9.2.zip https://www.silverpeas.org/files/swftools-bin-0.9.2.zip \
   && echo 'd40bd091c84bde2872f2733a3c767b3a686c8e8477a3af3a96ef347cf05c5e43 *swftools-bin-0.9.2.zip' | sha256sum - \
   && unzip /tmp/swftools-bin-0.9.2.zip -d / \

@@ -7,7 +7,7 @@ Such an image is dedicated for the developers that wish to have an environment r
 (compile and test) a Silverpeas project and this in a reproducible way, without having to be worried 
 about specific tools to install or specific settings required for the tests to be executed correctly.
 
-## Image creation
+## Create the Docker image
 
 To create an image, just do:
 
@@ -46,7 +46,7 @@ preconfigured for the integration tests will be downloaded and in general, for e
 The image is created to start a container with a default user (`silveruser`). 1000 is his identifier
 and `users` (group identifier 100) is its main group.
 In order to avoid permissions problems with the resources shared with the host (like the user Maven settings
-or the local Maven repository on the host), it is required that the identifier of your account in your host is the same that the 
+or the local Maven repository on the host), it is required that the identifier of your account in your host is the same as the 
 identifier of the default user in the container. In the case your user identifier isn't 1000, then you have to
 create an image by specifying the identifier in the command line as following (here, in our example,
 the user identifier is 1026):
@@ -63,7 +63,9 @@ For more information about the script, just do:
 
 	$ ./build.sh -h
 
-## Container running
+## Run the Docker container
+
+### By using the available script
 
 To run a container `silverdev` from the latest version of the image, just do:
 
@@ -81,12 +83,23 @@ just do:
 
 	$ ./run.sh -i 6.0 -n dev-myproject -s -w ${HOME}/MyProjects
 
-where `MyProjects` is the directories in which are stored your Silverpeas projects. This directory will
+where `MyProjects` is the directory in which are stored your Silverpeas projects. This directory will
 be mounted on `/home/silveruser/projects` in the container.
 
+The container spwaned from the image doesn't contain anymore an IDE. So you have to download and install by 
+yourself your preferred IDE. If the IDE is installed on the host and you wish to share it between several 
+containers, then just do:
 
-The script will link the following directories and files in your home `.ssh`, `.gnupg`, 
-`.m2/settings.xml`, `.m2/settings-security.xml` and `.gitconfig` to those of the default user in the
+	$ ./run.sh -n dev-myproject -s -a ${HOME}/MyApps
+
+where `MyApps` is the directory in which are installed both your IDE and others programs you wish to use 
+within the container. Don't forget to link the application binaries in the `/home/silveruser/bin` directory so
+that you will just have to type the command (the `/home/silveruser/bin` directory is in the PATH).
+
+### By your own
+
+The script above will also link the following directories and files in your home user directory: `.ssh`, `.gnupg`, 
+`.m2/settings.xml`, `.m2/settings-security.xml` and `.gitconfig` for the default user in the
 container. By doing so, any build performed within the container will be able to fetch dependencies, 
 to sign the source code, to deploy the software artifacts into a Nexus server and to commit and
 push into a Git remote repository. 
@@ -97,13 +110,15 @@ following:
 
 	$ docker run -it \
 	       -v "$HOME"/Projects:/home/silveruser/projects \ 
+		   -v "$HOME"/Apps:/home/silveruser/apps \
 	       silverpeas/silverdev /bin/bash
  
 If your requirement is also to commit and push into a remote Git repository, then link your
 `.gitconfig` file as following:
 
 	$ docker run -it \ 
-	       -v "$HOME"/Projects:/home/silveruser/projects \ 
+	       -v "$HOME"/Projects:/home/silveruser/projects \
+		   -v "$HOME"/Apps:/home/silveruser/apps \
 	       -v "$HOME"/.gitconfig:/home/silveruser/.gitconfig \
 	       silverpeas/silverdev /bin/bash
 

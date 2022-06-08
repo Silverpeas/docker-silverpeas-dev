@@ -13,9 +13,12 @@ while [[ $# -gt 0 ]]; do
     -h)
       echo "Usage: run.sh [-i IMAGE_VERSION] [-w WORKING_DIR] [-n NAME] [-s]"
       echo "Spawns and runs a container from the Docker image silverpeas/silverdev at a given version."
+      echo ""
       echo "In order to build the projects in that container, the working directory of your projects"
-      echo "will be mounted in the container. It checks if a Maven settings settings-docker.xml exist"
-      echo "in order to use it in the container. Otherwise, it is your settings.xml that will be used."
+      echo "could be mounted in the container. Your IDE, on the host, could be also accessible to the"
+      echo "container by mounting the directory into which it is installed."
+      echo "It checks if a Maven settings settings-docker.xml exist in order to use it in the container."
+      echo "Otherwise, it is your settings.xml that will be used."
       echo "The following files or directories will be also used in the container: "
       echo " - The Maven security configuration settings-security.xml"
       echo " - The Git configuration .gitconfig"
@@ -27,6 +30,10 @@ while [[ $# -gt 0 ]]; do
       echo "   -w WORKING_DIR    the path of your working directory to mount The working directory"
       echo "                     will be mounted to /home/silveruser/projects. By default nothing to"
       echo "                     mount."
+      echo "   -a APP_DIR        the path of the directory in which your IDE is installed or the home"
+      echo "                     directory of the IDE. It will be mounted to /home/silveruser/apps."
+      echo "                     You can also by this way share your other programs to the container."
+      echo "                     By default nothing to mount."
       echo "   -n NAME           a name to give to the container. By default silverdev-IMAGE_VERSION."
       echo "   -s                to share the local Maven repository of the host with the container."
       exit 0
@@ -38,6 +45,11 @@ while [[ $# -gt 0 ]]; do
       ;;
     -w)
       working_dir="-v "$2":/home/silveruser/projects"
+      shift # past argument
+      shift # past value
+      ;;
+    -a)
+      app_dir="-v "$2":/home/silveruser/apps"
       shift # past argument
       shift # past value
       ;;
@@ -64,7 +76,7 @@ else
 fi
 
 #xhost +si:localuser:$USER
-docker run -it -e DISPLAY=${DISPLAY} ${working_dir} ${maven_repo} \
+docker run -it -e DISPLAY=${DISPLAY} ${working_dir} ${app_dir} ${maven_repo} \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v "${settings}":/home/silveruser/.m2/settings.xml \
   -v "$HOME"/.m2/settings-security.xml:/home/silveruser/.m2/settings-security.xml \
