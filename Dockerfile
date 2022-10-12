@@ -27,12 +27,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Parameters whose values are required for the tests to succeed
 ARG DEFAULT_LOCALE=fr_FR.UTF-8
-ARG MAVEN_VERSION=3.8.5
-ARG MAVEN_SHA=89ab8ece99292476447ef6a6800d9842bbb60787b9b8a45c103aa61d2f205a971d8c3ddfb8b03e514455b4173602bd015e82958c0b3ddc1728a57126f773c743
-ARG WILDFLY_VERSION=24.0.1
+ARG MAVEN_VERSION=3.8.6
+ARG MAVEN_SHA=f790857f3b1f90ae8d16281f902c689e4f136ebe584aba45e4b1fa66c80cba826d3e0e52fdd04ed44b4c66f6d3fe3584a057c26dfcac544a60b301e6d0f91c26
+ARG WILDFLY_VERSION=26.1.1
 ARG JAVA_VERSION=11
-ARG GROOVY_VERSION=3.0.10
-ARG GROOVY_SHA=a7632bcb91b4283c1b0c85f3e7e6dac1f9608cff6c8c07590b6a3c8b2056a1bc
+ARG GROOVY_VERSION=3.0.13
+ARG GROOVY_SHA=e810267ddd1a8e3edad5c240d56a80d475adaa281251d7e544873b9a937e7a14
+ARG NODEJS_VERSION=16
 
 # Because the source code is shared between the host and the container, it is required the identifier
 # of the owner and of its group are the same between this two environments. By default, they are both set at 1000.
@@ -74,7 +75,7 @@ RUN apt-get update \
     firefox \
   && groupadd -g ${GROUP_ID} silveruser \
   && useradd -u ${USER_ID} -g ${GROUP_ID} -G users -d /home/silveruser -s /bin/bash -m silveruser \
-  && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+  && curl -sL https://deb.nodesource.com/setup_${NODEJS_VERSION}.x | bash - \
   && apt-get install -y nodejs \
   && rm -rf /var/lib/apt/lists/* \
   && update-ca-certificates -f \
