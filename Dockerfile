@@ -16,9 +16,9 @@
 # like .m2/settings.xml, .gitconfig, .gnupg and .ssh of the current user in the host are shared with
 # the container in order to be able to interact with his remote services.
 #
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
-LABEL name="Silverpeas Dev" description="A Docker image to dev and to build a Silverpeas project" vendor="Silverpeas" version=6.3
+LABEL name="Silverpeas Dev" description="A Docker image to dev and to build a Silverpeas project" vendor="Silverpeas" version="6.4-SNAPSHOT" build=1
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
 ENV TERM=xterm
@@ -29,10 +29,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG DEFAULT_LOCALE=fr_FR.UTF-8
 ARG MAVEN_VERSION=3.8.6
 ARG MAVEN_SHA=f790857f3b1f90ae8d16281f902c689e4f136ebe584aba45e4b1fa66c80cba826d3e0e52fdd04ed44b4c66f6d3fe3584a057c26dfcac544a60b301e6d0f91c26
-ARG WILDFLY_VERSION=26.1.1
-ARG JAVA_VERSION=11
-ARG GROOVY_VERSION=3.0.13
-ARG GROOVY_SHA=e810267ddd1a8e3edad5c240d56a80d475adaa281251d7e544873b9a937e7a14
+ARG WILDFLY_VERSION=26.1.2
+ARG JAVA_VERSION=17
+ARG GROOVY_VERSION=4.0.6
+ARG GROOVY_SHA=e3b541567e65787279f02031206589bcdf3cdaab9328d9e4d72ad23a86aa1053
 ARG NODEJS_VERSION=16
 
 # Because the source code is shared between the host and the container, it is required the identifier
@@ -90,7 +90,7 @@ RUN apt-get update \
   && curl -fsSL -o /tmp/apache-groovy.zip https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-${GROOVY_VERSION}.zip \
   && echo "${GROOVY_SHA}  /tmp/apache-groovy.zip" | sha256sum -c - \
   && unzip /tmp/apache-groovy.zip -d /opt/ \
-  && echo `grep -oP '(?<=")[a-zA-Z:/]+(?=")' /etc/environment`:/opt/groovy-{GROOVY_VERSION}/bin > /etc/environment \
+  && echo `grep -oP '(?<=")[a-zA-Z:/]+(?=")' /etc/environment`:/opt/groovy-${GROOVY_VERSION}/bin > /etc/environment \
   && mkdir /home/silveruser/bin \
   && echo "PATH=${PATH}:/home/silveruser/bin" >> /home/silveruser/.bashrc \
   && curl -fsSL -o /tmp/swftools-bin-0.9.2.zip https://www.silverpeas.org/files/swftools-bin-0.9.2.zip \
