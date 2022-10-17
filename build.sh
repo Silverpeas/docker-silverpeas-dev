@@ -9,7 +9,7 @@ function checkNotEmpty() {
   test "Z$1" != "Z" || die "Parameter is empty"
 }
 
-version=$(grep -oP '(?<=version=)[0-9]+.[0-9]+(.[0-9]+)?' Dockerfile)
+version=$(grep -oP '(?<=version=")[0-9]+.[0-9]+(.[0-9]+)?' Dockerfile)
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
@@ -55,7 +55,6 @@ while [[ $# -gt 0 ]]; do
     -v)
       checkNotEmpty "$2"
       version="$2"
-      version=1
       shift # past argument
       shift # past first value
       ;;
@@ -75,7 +74,6 @@ done
 if git rev-parse "$version" >/dev/null 2>&1; then
   git checkout $version
 fi
-
 
 # build the Docker image for building some of the Silverpeas projects
 docker build $user $group $wildfly_version $java_version \

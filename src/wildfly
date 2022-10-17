@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-WILDFLY_HOME=/opt/wildfly-for-tests/wildfly-26.1.1.Final
+WILDFLY_HOME=/opt/wildfly-for-tests/wildfly---build-arg WILDFLY_VERSION=26.1.2.Final
 
 if [ $# -ne 1 ]; then
   echo "Missing argument: start|stop|status"
