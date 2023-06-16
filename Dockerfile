@@ -9,8 +9,9 @@
 # <Silverpeas major version>.<Silverpeas minor version>.<Docker image patch version>
 # For instance, a Docker image with version 6.2.1 means it defines a development and build
 # environment for a projet based upon Silverpeas 6.2 and it is the first corrective version of such
-# a Docker image.
-#
+# a Docker image. The Silverpeas 6.2 can to be not yet released; in such a case, it means the Docker image is to
+# work on the next version of Silverpeas and, once this version is released it is to work on the patch versions of
+# this version of Silverpeas.
 # By using such a container, we ensure the build is reproductible and doesn't depend on the
 # environment context specific to the developer's host. Only the .m2 repository and some settings
 # like .m2/settings.xml, .gitconfig, .gnupg and .ssh of the current user in the host are shared with
@@ -18,18 +19,18 @@
 #
 FROM ubuntu:jammy
 
-LABEL name="Silverpeas Dev" description="A Docker image to dev and to build a Silverpeas project" vendor="Silverpeas" version="6.4-SNAPSHOT" build=1
+LABEL name="Silverpeas Dev" description="A Docker image to dev and to build a Silverpeas project" vendor="Silverpeas" version="6.4" build=1
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
 ENV TERM=xterm
 ENV TZ=Europe/Paris
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Parameters whose values are required for the tests to succeed
+# Parameters whose values are required yfor the tests to succeed
 ARG DEFAULT_LOCALE=fr_FR.UTF-8
-ARG MAVEN_VERSION=3.8.6
-ARG MAVEN_SHA=f790857f3b1f90ae8d16281f902c689e4f136ebe584aba45e4b1fa66c80cba826d3e0e52fdd04ed44b4c66f6d3fe3584a057c26dfcac544a60b301e6d0f91c26
-ARG WILDFLY_VERSION=26.1.2
+ARG MAVEN_VERSION=3.8.8
+ARG MAVEN_SHA=332088670d14fa9ff346e6858ca0acca304666596fec86eea89253bd496d3c90deae2be5091be199f48e09d46cec817c6419d5161fb4ee37871503f472765d00
+ARG WILDFLY_VERSION=26.1.3
 ARG JAVA_VERSION=11
 ARG GROOVY_VERSION=4.0.6
 ARG GROOVY_SHA=e3b541567e65787279f02031206589bcdf3cdaab9328d9e4d72ad23a86aa1053
@@ -42,8 +43,12 @@ ARG USER_ID=1000
 ARG GROUP_ID=1000
 
 COPY src/maven-deps.zip /tmp/
+COPY src/mozilla-firefox /etc/apt/preferences.d/
 
 RUN apt-get update \
+  && apt-get install -y software-properties-common \
+  && add-apt-repository -y ppa:mozillateam/ppa \
+  && apt-get update \
   && apt-get install -y tzdata \
   && apt-get install -y \
     apt-utils \

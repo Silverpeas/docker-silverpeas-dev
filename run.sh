@@ -5,41 +5,64 @@ function die() {
   exit 1
 }
 
+image_name="silverpeas/silverdev"
 image_version=latest
 name="silverdev-${image_version}"
 while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
-    -h)
-      echo "Usage: run.sh [-i IMAGE_VERSION] [-w WORKING_DIR] [-n NAME] [-s]"
-      echo "Spawns and runs a container from the Docker image silverpeas/silverdev at a given version."
-      echo ""
-      echo "In order to build the projects in that container, the working directory of your projects"
-      echo "could be mounted in the container. Your IDE, on the host, could be also accessible to the"
-      echo "container by mounting the directory into which it is installed."
-      echo "It checks if a Maven settings settings-docker.xml exist in order to use it in the container."
-      echo "Otherwise, it is your settings.xml that will be used."
-      echo "The following files or directories will be also used in the container: "
-      echo " - The Maven security configuration settings-security.xml"
-      echo " - The Git configuration .gitconfig"
-      echo " - The ssh configuration directory .ssh"
-      echo " - The GPG configuration directory .gnupg"
-      echo ""
-      echo "with:"
-      echo "   -i IMAGE_VERSION  the version of the Docker image to instantiate. By default latest."
-      echo "   -w WORKING_DIR    the path of your working directory to mount The working directory"
-      echo "                     will be mounted to /home/silveruser/projects. By default nothing to"
-      echo "                     mount."
-      echo "   -a APP_DIR        the path of the directory in which your IDE is installed or the home"
-      echo "                     directory of the IDE. It will be mounted to /home/silveruser/apps."
-      echo "                     You can also by this way share your other programs to the container."
-      echo "                     By default nothing to mount."
-      echo "   -n NAME           a name to give to the container. By default silverdev-IMAGE_VERSION."
-      echo "   -s                to share the local Maven repository of the host with the container."
+    -h|--help)
+      echo """Usage: run.sh [-i [IMAGE_NAME:]IMAGE_VERSION] [-w WORKING_DIR] [-n NAME] [-s]
+
+Spawns and runs a container from the Docker image silverpeas/silverdev at a
+given version.
+
+In order to build the Silverpeas projects in that container, you have two 
+possible options:
+- Either mounting the working folder containing the projects in the host on the
+  container;
+- Either fetching the projects from your SCM in the container.
+Your IDE, on the host, could be also accessible to the container by mounting on
+it the directory in which it is installed.
+
+The script checks if a Maven settings file settings-docker.xml exists in order
+to use it in the container. Otherwise, your settings.xml will be used.
+
+The following files or directories will be also used in the container:
+- The Maven security configuration settings-security.xml;
+- The Git configuration .gitconfig;
+- The ssh configuration directory .ssh;
+- The GPG configuration directory .gnupg;
+
+With:
+  -i [IMAGE_NAME:]IMAGE_VERSION
+                the name and the version of the Docker image to instantiate.
+                The name is the one with which you have built the Docker image.
+                By default the name is silverpeas/silverdev.
+                By default the version is latest.
+  -w WORKING_DIR
+                the path of your working directory to mount. The working folder
+                will be mounted on the /home/silveruser/projects directory in
+                the container.
+                By default nothing to mount. You have to fetch yourself the
+                projects.
+  -a APP_DIR    
+                the path of the directory in which your IDE is installed or the
+                home directory of the IDE. It will be mounted on the 
+                /home/silveruser/apps folder in the container. You can also by
+                this way to share your other programs with the container.
+                By default nothing to mount.
+  -n NAME
+                a name to give to the container.
+                By default silverdev-IMAGE_VERSION.
+  -s
+                to share the local Maven repository of the host with the container.
+      """
       exit 0
       ;;
     -i)
-      image_version="$2"
+      image_version=`echo "$2" | cut -d ':' -f 2`
+      test "$2" = "$image_version" || image_name=`echo "$2" | cut -d ':' -f 1`
       shift # past argument
       shift # past value
       ;;
@@ -83,5 +106,6 @@ docker run -it -e DISPLAY=${DISPLAY} ${working_dir} ${app_dir} ${maven_repo} \
   -v "$HOME"/.gitconfig:/home/silveruser/.gitconfig \
   -v "$HOME"/.ssh:/home/silveruser/.ssh \
   -v "$HOME"/.gnupg:/home/silveruser/.gnupg \
+  --privileged \
   --name ${name} \
-  silverpeas/silverdev:${image_version} /bin/bash
+  ${image_name}:${image_version} /bin/bash
