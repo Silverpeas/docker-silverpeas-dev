@@ -15,13 +15,11 @@ while [[ $# -gt 0 ]]; do
   key="$1"
   case $key in
     -h|--help)
-      w=`grep "ARG WILDFLY_VERSION" Dockerfile | cut -d '=' -f 2 | xargs`
       j=`grep "ARG JAVA_VERSION" Dockerfile | cut -d '=' -f 2 | xargs`
       u=`grep "ARG USER_ID" Dockerfile | cut -d '=' -f 2 | xargs`
       g=`grep "ARG GROUP_ID" Dockerfile | cut -d '=' -f 2 | xargs`
       echo """Usage: build.sh [-u USER_ID]
                 [-g GROUP_ID]
-                [-w WILDFLY_VERSION]
                 [-j JAVA_VERSION]
                 [-v IMAGE_VERSION]
                 [-n IMAGE_NAME]
@@ -42,10 +40,6 @@ With:
                 resources have to be shared between the Docker container and
                 the host.
                 By default $g.
-  -w WILDFLY_VERSION
-                set the version of the Widfly distribution to use for running
-                the integration tests.
-                By default $w.
   -j JAVA_VERSION
                 set the version of the JDK to use for building, testing and
                 running Silverpeas.
@@ -70,13 +64,6 @@ With:
       group="--build-arg GROUP_ID=$2"
       shift # past argument
       shift # past value
-      ;;
-    -w)
-      checkNotEmpty "$2"
-      wildfly_version="--build-arg WILDFLY_VERSION=$2"
-      shift # past argument
-      shift # past first value
-      sed -i -e "s/WILDFLY_HOME=\/opt\/wildfly-for-tests\/wildfly-[0-9.]\+.Final/WILDFLY_HOME=\/opt\/wildfly-for-tests\/wildfly-${wildfly_version}.Final/g" src/wildfly
       ;;
     -v)
       checkNotEmpty "$2"
