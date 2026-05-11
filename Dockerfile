@@ -19,8 +19,17 @@
 #
 FROM ubuntu:noble
 
-LABEL name="Silverpeas Dev" description="A Docker image to dev and to build a Silverpeas project" vendor="Silverpeas" version="6.5" build=1
-MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
+LABEL name="Silverpeas Dev" \
+  description="A Docker image to dev and to build a Silverpeas project" \
+  vendor="Silverpeas" \
+  version="6.5" \
+  build=1
+
+LABEL org.opencontainers.image.title="Silverpeas Dev"
+LABEL org.opencontainers.image.description="A Docker image to dev and to build a Silverpeas project"
+LABEL org.opencontainers.image.vendor="Silverpeas"
+LABEL org.opencontainers.image.authors="Miguel Moquillon <miguel.moquillon@silverpeas.org>"
+LABEL org.opencontainers.image.licenses="AGPLv3"
 
 ENV TERM=xterm
 ENV TZ=Europe/Paris
@@ -126,12 +135,12 @@ COPY src/wildfly /home/silveruser/bin/
 RUN chown -R silveruser:silveruser /home/silveruser \
   && echo "if [ -f .git_completion_profile ]; then\n  . ~/.git_completion_profile\nfi" >> /home/silveruser/.bashrc
 
-ENV LANG ${DEFAULT_LOCALE}
-ENV LANGUAGE ${DEFAULT_LOCALE}
-ENV LC_ALL ${DEFAULT_LOCALE}
-ENV MAVEN_HOME /usr/share/maven
-ENV JAVA_HOME /usr/lib/jvm/java-${JAVA_VERSION}-openjdk-amd64
-ENV GROOVY_HOME /opt/groovy-${GROOVY_VERSION}
+ENV LANG=${DEFAULT_LOCALE}
+ENV LANGUAGE=${DEFAULT_LOCALE}
+ENV LC_ALL=${DEFAULT_LOCALE}
+ENV MAVEN_HOME=/usr/share/maven
+ENV JAVA_HOME=/usr/lib/jvm/java-${JAVA_VERSION}-openjdk-amd64
+ENV GROOVY_HOME=/opt/groovy-${GROOVY_VERSION}
 
 # By default, the build will be done in the default user's home directory
 USER silveruser
