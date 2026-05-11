@@ -17,9 +17,9 @@
 # like .m2/settings.xml, .gitconfig, .gnupg and .ssh of the current user in the host are shared with
 # the container in order to be able to interact with his remote services.
 #
-FROM ubuntu:jammy
+FROM ubuntu:noble
 
-LABEL name="Silverpeas Dev" description="A Docker image to dev and to build a Silverpeas project" vendor="Silverpeas" version="6.4" build=1
+LABEL name="Silverpeas Dev" description="A Docker image to dev and to build a Silverpeas project" vendor="Silverpeas" version="6.5" build=1
 MAINTAINER Miguel Moquillon "miguel.moquillon@silverpeas.org"
 
 ENV TERM=xterm
@@ -28,13 +28,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Parameters whose values are required yfor the tests to succeed
 ARG DEFAULT_LOCALE=fr_FR.UTF-8
-ARG MAVEN_VERSION=3.9.6
-ARG MAVEN_SHA=706f01b20dec0305a822ab614d51f32b07ee11d0218175e55450242e49d2156386483b506b3a4e8a03ac8611bae96395fd5eec15f50d3013d5deed6d1ee18224
-ARG WILDFLY_VERSION=26.1.3
+ARG MAVEN_VERSION=3.9.15
+ARG MAVEN_SHA=33d81e0ec785f0207e3e5e3ffb61863e1dca5784c15ac3fb5ff105f69cffbea484eb8d473ea60467a63f7b0570eef8622f2fed8eee96acbe668aa313391cddb3
+ARG WILDFLY_VERSION=34.0.1
 ARG JAVA_VERSION=11
-ARG GROOVY_VERSION=4.0.20
-ARG GROOVY_SHA=fdf70cc57eff997f3fa5aee2b340d311593912e822ad810b3fd6ee403985eb75
-ARG NODEJS_VERSION=16
+ARG GROOVY_VERSION=4.0.28
+ARG GROOVY_SHA=6a052bfd2ca77d57e0db304a313dd9a729945c5a31420e6d48505be4840bfc54
+ARG NODEJS_VERSION=22
 
 # Because the source code is shared between the host and the container, it is required the identifier
 # of the owner and of its group are the same between this two environments. By default, they are both set at 1000.
@@ -84,12 +84,12 @@ RUN apt-get update \
   && apt-get install -y nodejs \
   && rm -rf /var/lib/apt/lists/* \
   && update-ca-certificates -f \
-  && mkdir -p /usr/share/maven /usr/share/maven/ref \
-  && curl -fsSL -o /tmp/apache-maven.tar.gz https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+  && mkdir -p /opt/maven /opt/maven/ref \
+  && curl -fsSL -o /tmp/apache-maven.tar.gz https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
   && echo "${MAVEN_SHA}  /tmp/apache-maven.tar.gz" | sha512sum -c - \
-  && tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1 \
+  && tar -xzf /tmp/apache-maven.tar.gz -C /opt/maven --strip-components=1 \
   && rm -f /tmp/apache-maven.tar.gz \
-  && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn \
+  && ln -s /opt/maven/bin/mvn /usr/bin/mvn \
   && unzip /tmp/maven-deps.zip -d /home/silveruser/ \
   && chown -R silveruser:silveruser /home/silveruser/.m2 \
   && curl -fsSL -o /tmp/apache-groovy.zip https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-binary-${GROOVY_VERSION}.zip \
