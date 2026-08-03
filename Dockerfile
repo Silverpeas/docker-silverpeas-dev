@@ -37,8 +37,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Parameters whose values are required yfor the tests to succeed
 ARG DEFAULT_LOCALE=fr_FR.UTF-8
-ARG MAVEN_VERSION=3.9.15
-ARG MAVEN_SHA=33d81e0ec785f0207e3e5e3ffb61863e1dca5784c15ac3fb5ff105f69cffbea484eb8d473ea60467a63f7b0570eef8622f2fed8eee96acbe668aa313391cddb3
+ARG MAVEN_VERSION=3.9.16
+ARG MAVEN_SHA=831a8591fe20c8243b1dbe7d71e3244f31d1665b0804b2e825e38cbbe5ce0cafb8338851f90780735568773e0a6cd07bbec107cda0b896b008b861075358b6f6
 ARG WILDFLY_VERSION=34.0.1
 ARG JAVA_VERSION=11
 ARG GROOVY_VERSION=4.0.28
@@ -52,11 +52,9 @@ ARG USER_ID=1000
 ARG GROUP_ID=1000
 
 COPY src/maven-deps.zip /tmp/
-COPY src/mozilla-firefox /etc/apt/preferences.d/
 
 RUN apt-get update \
   && apt-get install -y software-properties-common \
-  && add-apt-repository -y ppa:mozillateam/ppa \
   && apt-get update \
   && apt-get install -y tzdata \
   && apt-get install -y \
@@ -86,7 +84,7 @@ RUN apt-get update \
     bash-completion \
     libgbm1 \
     htop \
-    firefox \
+  && userdel -r ubuntu \
   && groupadd -g ${GROUP_ID} silveruser \
   && useradd -u ${USER_ID} -g ${GROUP_ID} -G users -d /home/silveruser -s /bin/bash -m silveruser \
   && curl -sL https://deb.nodesource.com/setup_${NODEJS_VERSION}.x | bash - \
