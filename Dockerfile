@@ -92,7 +92,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* \
   && update-ca-certificates -f \
   && mkdir -p /opt/maven /opt/maven/ref \
-  && curl -fsSL -o /tmp/apache-maven.tar.gz https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+  && curl -fsSL -o /tmp/apache-maven.tar.gz https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
   && echo "${MAVEN_SHA}  /tmp/apache-maven.tar.gz" | sha512sum -c - \
   && tar -xzf /tmp/apache-maven.tar.gz -C /opt/maven --strip-components=1 \
   && rm -f /tmp/apache-maven.tar.gz \
