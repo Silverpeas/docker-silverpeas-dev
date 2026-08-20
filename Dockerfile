@@ -132,6 +132,7 @@ COPY src/wildfly /home/silveruser/bin/
 
 RUN chown -R silveruser:silveruser /home/silveruser \
   && echo "if [ -f .git_completion_profile ]; then\n  . ~/.git_completion_profile\nfi" >> /home/silveruser/.bashrc
+RUN sed -i -e "s/WILDFLY_VERSION=[0-9.]\+.Final/WILDFLY_VERSION=${WILDFLY_VERSION}.Final/g" /home/silveruser/bin/wildfly
 
 ENV LANG=${DEFAULT_LOCALE}
 ENV LANGUAGE=${DEFAULT_LOCALE}
