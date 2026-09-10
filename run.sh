@@ -116,8 +116,14 @@ else
   settings="$HOME"/.m2/settings.xml
 fi
 
+if [ -e /run/user/${UID}/keyring/ssh ]; then
+  ssh_agent="-v /run/user/1000/keyring/ssh:/run/ssh-agent.sock -e SSH_AUTH_SOCK=/run/ssh-agent.sock"
+else
+  ssh_agent=""
+fi
+
 #xhost +si:localuser:$USER
-docker run -it -e DISPLAY=${DISPLAY} ${working_dir} ${app_dir} ${maven_repo} ${mounts} \
+docker run -it -e DISPLAY=${DISPLAY} ${working_dir} ${app_dir} ${maven_repo} ${mounts} ${ssh_agent} \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v "${settings}":/home/silveruser/.m2/settings.xml \
   -v "$HOME"/.m2/settings-security.xml:/home/silveruser/.m2/settings-security.xml \
