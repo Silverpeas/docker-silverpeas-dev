@@ -40,6 +40,9 @@ The following files or directories will be also used in the container:
 - The Git configuration .gitconfig;
 - The ssh configuration directory .ssh;
 - The GPG configuration directory .gnupg;
+- The Silverpeas cache directory .cache/silverpeas (created if missing), in
+  which the tools (AI coding agents, ...) keep data shared by all the
+  Silverpeas projects;
 
 With:
   -i [IMAGE_NAME:]IMAGE_VERSION
@@ -122,6 +125,9 @@ else
   ssh_agent=""
 fi
 
+# created beforehand so that it is owned by the user and not by root as Docker would do
+mkdir -p "$HOME"/.cache/silverpeas
+
 #xhost +si:localuser:$USER
 docker run -it -e DISPLAY=${DISPLAY} ${working_dir} ${app_dir} ${maven_repo} ${mounts} ${ssh_agent} \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
@@ -130,6 +136,7 @@ docker run -it -e DISPLAY=${DISPLAY} ${working_dir} ${app_dir} ${maven_repo} ${m
   -v "$HOME"/.gitconfig:/home/silveruser/.gitconfig \
   -v "$HOME"/.ssh:/home/silveruser/.ssh \
   -v "$HOME"/.gnupg:/home/silveruser/.gnupg \
+  -v "$HOME"/.cache/silverpeas:/home/silveruser/.cache/silverpeas \
   --privileged \
   --name ${name} \
   ${image_name}:${image_version} /bin/bash

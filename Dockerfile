@@ -15,7 +15,9 @@
 # By using such a container, we ensure the build is reproductible and doesn't depend on the
 # environment context specific to the developer's host. Only the .m2 repository and some settings
 # like .m2/settings.xml, .gitconfig, .gnupg and .ssh of the current user in the host are shared with
-# the container in order to be able to interact with his remote services.
+# the container in order to be able to interact with his remote services. The .cache/silverpeas
+# directory can also be shared to keep the data cached by the tools (AI coding agents, ...) for all
+# the Silverpeas projects.
 #
 FROM ubuntu:resolute
 
@@ -131,7 +133,8 @@ COPY src/settings.xml /home/silveruser/.m2/
 COPY src/git_completion_profile /home/silveruser/.git_completion_profile
 COPY src/wildfly /home/silveruser/bin/
 
-RUN chown -R silveruser:silveruser /home/silveruser \
+RUN mkdir -p /home/silveruser/.cache/silverpeas \
+  && chown -R silveruser:silveruser /home/silveruser \
   && echo "if [ -f .git_completion_profile ]; then\n  . ~/.git_completion_profile\nfi" >> /home/silveruser/.bashrc
 RUN sed -i -e "s/WILDFLY_VERSION=[0-9.]\+.Final/WILDFLY_VERSION=${WILDFLY_VERSION}.Final/g" /home/silveruser/bin/wildfly
 

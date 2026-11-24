@@ -104,7 +104,9 @@ The script above will also link the following directories and files in your home
 `.m2/settings.xml`, `.m2/settings-security.xml` and `.gitconfig` for the default user in the
 container. By doing so, any build performed within the container will be able to fetch dependencies, 
 to sign the source code, to deploy the software artifacts into a remote Maven repository and to commit and
-push into a remote Git repository. 
+push into a remote Git repository. It links also the `.cache/silverpeas` directory (created if missing) in
+which the tools, like the AI coding agents, keep the data shared by all the Silverpeas projects (for
+example the rules of the SonarCloud quality profiles). 
 
 If your requirement is just to build a Silverpeas project (id est compiling and testing), then
 you don't have to link these directories and files. You can then run a container as
