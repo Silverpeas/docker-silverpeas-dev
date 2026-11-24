@@ -17,7 +17,7 @@
 # like .m2/settings.xml, .gitconfig, .gnupg and .ssh of the current user in the host are shared with
 # the container in order to be able to interact with his remote services.
 #
-FROM ubuntu:noble
+FROM ubuntu:resolute
 
 LABEL name="Silverpeas Dev" \
   description="A Docker image to dev and to build a Silverpeas project" \
@@ -37,13 +37,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Parameters whose values are required yfor the tests to succeed
 ARG DEFAULT_LOCALE=fr_FR.UTF-8
-ARG MAVEN_VERSION=3.9.16
-ARG MAVEN_SHA=831a8591fe20c8243b1dbe7d71e3244f31d1665b0804b2e825e38cbbe5ce0cafb8338851f90780735568773e0a6cd07bbec107cda0b896b008b861075358b6f6
-ARG WILDFLY_VERSION=34.0.1
-ARG JAVA_VERSION=17
-ARG GROOVY_VERSION=4.0.28
-ARG GROOVY_SHA=6a052bfd2ca77d57e0db304a313dd9a729945c5a31420e6d48505be4840bfc54
-ARG NODEJS_VERSION=22
+ARG MAVEN_VERSION=3.10.2
+ARG MAVEN_SHA=57d2db6b37e7582119137ade544557bba741b29e62109ef81539a2bdfd6d0e641fdd5d8edb014af1816d0510deac6fac8f347433b3a1aa36316ba85aa77b8119
+ARG WILDFLY_VERSION=39.0.1
+ARG JAVA_VERSION=21
+ARG GROOVY_VERSION=4.0.33
+ARG GROOVY_SHA=395a69a81d5e9915d360d630663c1d98534c9dec134cb267798e49370855d93d
+ARG NODEJS_VERSION=26
 
 # Because the source code is shared between the host and the container, it is required the identifier
 # of the owner and of its group are the same between this two environments. By default, they are both set at 1000.
@@ -84,6 +84,7 @@ RUN apt-get update \
     bash-completion \
     libgbm1 \
     htop \
+    jq \
   && userdel -r ubuntu \
   && groupadd -g ${GROUP_ID} silveruser \
   && useradd -u ${USER_ID} -g ${GROUP_ID} -G users -d /home/silveruser -s /bin/bash -m silveruser \
